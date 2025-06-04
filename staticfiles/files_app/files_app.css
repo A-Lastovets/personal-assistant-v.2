@@ -1,0 +1,111 @@
+.file-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-item {
+    margin: 20px 0; 
+    padding: 15px; 
+    border: 1px solid #ddd;
+    border-radius: 5px; 
+    display: flex; 
+    align-items: center; 
+    transition: box-shadow 0.3s;
+}
+
+.file-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.file-preview {
+    width: 100px; 
+    height: 100px;
+    object-fit: cover; 
+    margin-right: 15px; 
+}
+
+.modal {
+    display: none; 
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.modal-content {
+    margin: 5% auto; 
+    padding: 0; 
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 1200px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.video-preview {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+}
+
+
+.modal-dialog {
+    max-width: none;
+    width: 66%;
+    height: 80%;
+}
+
+.modal-content {
+    height: 100%;
+}
+
+.modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+
+h5 {
+    margin-bottom: 10px; 
+}
+
+
+.list-group-item {
+    text-align: center;
+}
+
+
+#modalImage {
+    max-width: 80%; 
+    max-height: 70vh; 
+    object-fit: contain; 
+    margin: 0 auto; 
+    display: block; 
+}
+
+.form-control {
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    margin-top: 10px;
+}

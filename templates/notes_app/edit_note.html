@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit note{% endblock %}
+
+{% load notes_custom_filters %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/note_edit.css' %}">
+
+{% block content %}
+<div class="card contact-form-container mt-4 shadow">
+    <div class="card-header" style="background-color: #155840; color: #E2B29B;">
+        <h1 class="m-2">Edit note</h1>
+    </div>
+
+    <div class="card-body">
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div id="success-message" class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if not note %}
+            <p class="text-center">There are no notes available for editing</p>
+            <div class="text-center mt-3">
+                <a href="{% url 'note_list' %}" class="btn btn-secondary" style="background-color: #E2B29B; color: white;">Back to notes list</a>
+            </div>
+        {% else %}
+        
+            <form method="POST" class="p-4 rounded">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_title">{{ form.title.label }}</label>
+                    {{ form.title|add_class:"form-control" }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_content">{{ form.content.label }}</label>
+                    {{ form.content|add_attrs:"form-control,3" }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_tags" class="d-flex align-items-center">
+                        Теги:
+                        <div id="selected-tags" class="d-flex flex-wrap ms-2"></div> 
+                    </label>
+                    <div class="d-flex flex-wrap" id="tag-container">
+                        {% for tag in tags %}
+                            <div class="me-2 mb-2">
+                                <input type="checkbox" class="d-none" id="tag{{ tag.id }}" name="tags" value="{{ tag.id }}" onchange="updateTagStyle(this)">
+                                <label class="btn btn-outline-secondary tag-label" for="tag{{ tag.id }}" style="background-color: #6FBDA2; color: #3D6657; padding: 5px 10px; border-radius: 5px; transition: background-color 0.2s;">
+                                    {{ tag.name }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="newTagName">New tag:</label>
+                    <input type="text" id="newTagName" class="form-control mt-2" placeholder="Введіть ім'я нового тегу">
+                    <button type="button" class="btn btn-primary mt-2" id="createTagButton">Create tag</button>
+                </div>
+            
+                <button type="submit" class="btn btn-success mt-3">Update note</button>
+                <a href="{% url 'note_list' %}" class="btn btn-info mt-3">Back to notes list</a>
+            </form>
+    
+            <form method="POST" action="{% url 'add_tag' %}" id="addTagForm" style="display:none;">
+                {% csrf_token %}
+                <input type="hidden" name="name" id="hiddenTagName">
+            </form>
+            {% endif %}
+    </div>
+</div>
+
+<script>
+    function updateTagStyle(checkbox) {
+        const label = document.querySelector(`label[for="${checkbox.id}"]`);
+        const selectedTagsContainer = document.getElementById('selected-tags');
+
+        if (checkbox.checked) {
+            label.style.backgroundColor = '#3D6657';
+            label.style.color = '#E2B29B';
+
+            const badge = document.createElement('span');
+            badge.className = 'badge me-2 ml-1';
+            badge.textContent = label.textContent;
+            badge.style.backgroundColor = '#3D6657';
+
+            selectedTagsContainer.appendChild(badge);
+        } else {
+            label.style.backgroundColor = '#6FBDA2';
+            label.style.color = '#3D6657';
+
+            const badgeToRemove = Array.from(selectedTagsContainer.children).find(badge => badge.textContent === label.textContent);
+            if (badgeToRemove) {
+                badgeToRemove.remove();
+            }
+        }
+    }
+
+    document.getElementById('createTagButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        const newTagName = document.getElementById('newTagName').value.trim();
+        if (newTagName) {
+            const addTagForm = document.getElementById('addTagForm');
+            if (addTagForm) {
+                document.getElementById('hiddenTagName').value = newTagName;
+                addTagForm.submit();
+            } else {
+                console.error('The addTagForm was not found.');
+            }
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var successMessage = document.getElementById('success-message');
+        if (successMessage) {
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+    });
+</script>
+
+<style>
+    .tag-label:hover {
+        background-color: #40886E;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            width: 100%;
+            margin: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .form-control {
+            padding: 10px;
+        }
+
+        .tag-label {
+            font-size: 0.9rem;
+            padding: 4px 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    }
+</style>
+
+{% endblock %}

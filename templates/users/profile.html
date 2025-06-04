@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="card" style="background-color: #3D6657; color: #E2B29B;">
+    <div class="card-header" style="background-color: #155840; color: #E2B29B;">
+        <h2 class="text-center">Profile</h2>
+    </div>
+
+    <div class="card-body">
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="alert alert-success text-center" role="alert" style="background-color: #E2B29B; color: #155840; font-weight: bold;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if user_form.errors %}
+                <div class="alert alert-danger">
+                    {{ user_form.errors }}
+                </div>
+            {% endif %}
+            {% if profile_form.errors %}
+                <div class="alert alert-danger">
+                    {{ profile_form.errors }}
+                </div>
+            {% endif %}
+            
+            <div class="form-group text-center">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" class="rounded-circle" alt="Avatar" style="width: 150px; height: 150px;">
+                    
+                    <!-- Кнопка для очищення аватара -->
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="avatar-clear" id="avatar-clear">
+                        <label class="form-check-label" for="avatar-clear" style="color: #E2B29B;">
+                            Clear image
+                        </label>
+                    </div>
+                {% else %}
+                    <img src="https://sudoteam.s3.eu-north-1.amazonaws.com/default_avatar.png" class="rounded-circle" alt="Default Avatar" style="width: 150px; height: 150px;">
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ user_form.email.label_tag }}
+                {{ user_form.email }}
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.first_name.label_tag }}
+                {{ profile_form.first_name }}
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.last_name.label_tag }}
+                {{ profile_form.last_name }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_avatar">Change:</label>
+                <input type="file" name="avatar" id="id_avatar" class="form-control-file">
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.phone.label_tag }}
+                {{ profile_form.phone }}
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.address.label_tag }}
+                {{ profile_form.address }}
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.gender.label_tag }}
+                {{ profile_form.gender }}
+            </div>
+
+            <div class="form-group mt-3 text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .card {
+            margin: 10px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+        }
+
+        .form-control {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+{% endblock %}

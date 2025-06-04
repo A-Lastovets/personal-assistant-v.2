@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}News{% endblock %}
+
+{% block content %}
+    <div class="currency-section">
+        {% if usd_to_uah and eur_to_uah and pln_to_uah %}
+            <p><strong>Exchange rates:</strong> 1 USD = {{ usd_to_uah }} UAH | 1 EUR = {{ eur_to_uah }} UAH | 1 PLN = {{ pln_to_uah }} UAH</p>
+        {% else %}
+            <p>{{ error }}</p>
+        {% endif %}
+    </div>
+    
+    <div class="header-container">
+        <h2>News</h2>
+    </div>
+
+    <div class="news-container">
+        {% for category, articles in news_by_category.items %}
+            <div class="news-section">
+                <button class="toggle-news" onclick="toggleNews('{{ category|slugify }}')">
+                    {{ category|title }} News
+                </button>
+                <div class="news-list" id="{{ category|slugify }}">
+                    {% if articles %}
+                        <ul>
+                            {% for article in articles %}
+                                <li>
+                                    <h4><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h4>
+                                    <p>{{ article.description }}</p>
+                                    <p><strong>Author:</strong>
+                                    {% if article.author and article.author != "None" %}
+                                        {{ article.author }}
+                                    {% else %}
+                                        Unknown Author
+                                    {% endif %}
+                                    </p>
+                                    <p>{{ article.published_at }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="back-to-top">
+                            <button onclick="scrollToTop()" class="button">Go up to the top</button>
+                        </div>
+                    {% else %}
+                        <p>No news found for this category</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .currency-section {
+            text-align: left;
+            padding: 10px;
+            background-color: #155840;
+            color: #E2B29B;
+            font-size: 1rem;
+            margin-bottom: 40px; 
+        }
+
+        .header-container {
+            margin-top: 40px;
+        }
+
+        .header-container h2 {
+            color: #81BDA8;
+            font-weight: bold;
+        }
+
+        .news-container {
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        function toggleNews(category) {
+            const newsList = document.getElementById(category);
+            const backToTopButton = newsList.querySelector('.back-to-top');
+
+            if (newsList.style.display === "block") {
+                newsList.style.display = "none";
+                backToTopButton.style.display = "none"; 
+            } else {
+                newsList.style.display = "block";
+                backToTopButton.style.display = "block"; 
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' 
+            });
+        }
+    </script>
+{% endblock %}

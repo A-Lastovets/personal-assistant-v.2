@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="card" style="background-color: #3D6657; color: #E2B29B;">
+    <div class="card-header" style="background-color: #155840; color: #E2B29B;">
+        <h2 class="text-center">Log In</h2>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+            <div class="alert alert-danger" role="alert" style="background-color: #D9534F !important; color: #662826;">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username|add_class:"form-control" }}
+                {{ form.username.errors|striptags }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                {{ form.password|add_class:"form-control" }}
+                {{ form.password.errors|striptags }}
+            </div>
+            <div class="form-group d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary" style="background-color: #6FBDA2; border: none;">Log In</button>
+                <p style="margin: 0; margin-top: 15px; align-self: center;">Forgot Password? <a href="{% url 'users:password_reset' %}" style="color: #E2B29B;">Recover Password</a></p>
+            </div>
+            <div class="form-group text-center">
+                <p>Don't have an account? <a href="{% url 'users:signup' %}" style="color: #E2B29B;">Sign Up</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .card {
+            width: 100%;
+            margin: 10px;
+        }
+
+        .form-control {
+            padding: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+{% endblock %}

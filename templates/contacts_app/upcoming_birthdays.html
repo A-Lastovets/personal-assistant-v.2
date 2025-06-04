@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Upcoming birthdays{% endblock %}
+
+{% block content %}
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+
+        .content-wrapper {
+            border: 2px solid #155840;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #155840;
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+
+        .contact-form-container {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #155840;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #E2B29B;
+        }
+
+        .btn-primary {
+            background-color: #E2B29B;
+            border-color: #E2B29B;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #C69C6D;
+            border-color: #C69C6D;
+        }
+
+        .btn {
+            border-radius: 5px;
+        }
+
+        .list-group-item {
+            background-color: #40886E; 
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            color: #E2B29B; 
+        }
+
+        .list-group-item:hover {
+            background-color: #3D6657;
+        }
+
+        .list-group-item strong {
+            color: #E2B29B;
+        }
+
+        .form-control {
+            background-color: #40886E;
+            border-radius: 5px;
+            border: 1px solid #E2B29B;
+            color: white;
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        .form-control:focus {
+            border-color: #C69C6D;
+            background-color: #3D6657;
+        }
+
+        .form-group select.form-control {
+            background-color: #40886E;
+            border: 1px solid #E2B29B; 
+            border-radius: 8px;
+            padding: 12px 20px; 
+            color: white; 
+            font-size: 1rem;
+            min-height: 45px;
+        }
+
+        .form-group select.form-control:focus {
+            border-color: #C69C6D; 
+            background-color: #3D6657; 
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+
+    <div class="content-wrapper mx-auto">
+        <h1 class="mb-4 text-center">Upcoming birthdays</h1>
+
+        <div class="card contact-form-container">
+            <form method="GET" class="mb-4">
+                <div class="form-group">
+                    {{ form.period.label_tag }}
+                    {{ form.period }}
+                </div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+
+            <ul class="list-group">
+                {% for contact in upcoming_birthdays %}
+                    <li class="list-group-item">
+                        <strong>{{ contact.name }}</strong> - {{ contact.birthday }} ({{ contact.days_until_birthday }} days until the birthday)
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No upcoming birthdays.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

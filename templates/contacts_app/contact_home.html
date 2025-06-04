@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Main contacts page{% endblock %}
+
+{% block content %}
+<div class="card contact-form-container" style="text-align: center;">
+    <h1 class="mb-4 card">Address book</h1>
+    <div class="list-group">
+        <a href="{% url 'contact_list' %}" class="list-group-item list-group-item-action">Contact list</a>
+        <a href="{% url 'add_contact' %}" class="list-group-item list-group-item-action">Add contact</a>
+        <a href="{% url 'upcoming_birthdays' %}" class="list-group-item list-group-item-action">Upcoming birthdays</a>
+        <a href="{% url 'contact_search' %}" class="list-group-item list-group-item-action">Search contacts</a>
+    </div>
+</div>
+
+<style>
+    .contact-form-container .card {
+        background-color: #155840;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .list-group-item-action {
+        color: #E2B29B;
+        background-color: #3D6657;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item-action:hover {
+        background-color: #E2B29B;
+        color: #155840;
+        border-color: #E2B29B;
+    }
+
+    .list-group-item-action:focus {
+        box-shadow: none;
+    }
+
+    .list-group-item-action:active {
+        background-color: #C69C6D;
+        color: #155840;
+    }
+
+    .list-group {
+        margin-top: 20px;
+    }
+</style>
+
+{% endblock %}

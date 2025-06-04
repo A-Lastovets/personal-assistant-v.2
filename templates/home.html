@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Personal Assistant{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 20px;">
+    <div class="row">
+        <div class="col-12 text-end" style="position: relative;">
+            <div class="position-absolute" style="right: 0; top: 0; z-index: 1000; color: #E2B29B;">
+                <strong>Exchange rates:</strong> 
+                {% if error %}
+                    <span class="text-danger">{{ error }}</span>
+                {% else %}
+                    <span>1 USD = {{ usd_to_uah }} UAH</span> | 
+                    <span>1 EUR = {{ eur_to_uah }} UAH</span> | 
+                    <span>1 PLN = {{ pln_to_uah }} UAH</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <h1 style="color: #81BDA8;">News</h1>
+
+    {% for category, articles in news_by_category.items %}
+        <h2 style="color: #6FBDA2; border-bottom: 2px solid #E2B29B; padding-bottom: 5px; margin-bottom: 10px;">
+            <a href="#" class="category-toggle" data-target="#category-{{ forloop.counter }}" style="text-decoration: none; color: inherit;">{{ category|title }}</a>
+        </h2>
+        <div class="list-group mb-4 category-content" id="category-{{ forloop.counter }}" style="display: none;">
+            {% for article in articles %}
+                <div class="list-group-item" style="position: relative; padding-bottom: 40px; border: 2px solid rgba(0, 0, 0, 0.199);">
+                    <h5 class="mb-1" style="color: #E2B29B;">{{ article.title }}</h5>
+                    <p class="mb-1">{{ article.description }}</p>
+                    <small class="text-muted">Author: {{ article.author }} | Date: {{ article.published_at }}</small>
+                    <a href="{{ article.url }}" class="btn btn-outline-primary mt-2" style="display: block; margin-top: 10px; background-color: transparent !important; border: 2px solid #E2B29B !important; color: #E2B29B !important; text-decoration: none !important;">Read more</a>
+                </div>
+            {% empty %}
+                <p>There are currently no available news articles in this category.</p>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p>There are currently no available news articles.</p>
+    {% endfor %}
+
+    <style>
+        #scrollToTopBtn {
+            background-color: #E2B29B;
+            color: white;
+            border: 2px solid transparent;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        #scrollToTopBtn:hover {
+            background-color: transparent;
+            border-color: #E2B29B;
+            color: #E2B29B;
+        }
+
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .category-toggle {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .list-group-item {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            #scrollToTopBtn {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .category-toggle {
+                font-size: 1.5rem;
+            }
+
+            .list-group-item {
+                padding: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .category-toggle {
+                font-size: 1.8rem;
+            }
+
+            .list-group-item {
+                padding: 25px;
+            }
+        }
+    </style>
+
+    <a id="scrollToTopBtn" class="btn btn-outline-secondary" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000;">Up</a>
+</div>
+
+<script>
+    document.querySelectorAll('.category-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            const targetId = toggle.getAttribute('data-target');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement.style.display === 'none' || targetElement.style.display === '') {
+                targetElement.style.display = 'block';
+                setTimeout(() => {
+                    targetElement.style.opacity = 1;
+                }, 0);
+            } else {
+                targetElement.style.opacity = 0;
+                targetElement.style.display = 'none';
+            }
+        });
+    });
+
+    window.addEventListener('scroll', function() {
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        if (window.scrollY > 100) {
+            scrollToTopBtn.style.display = 'block';
+        } else {
+            scrollToTopBtn.style.display = 'none';
+        }
+    });
+
+    document.getElementById('scrollToTopBtn').addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+
+{% endblock %}

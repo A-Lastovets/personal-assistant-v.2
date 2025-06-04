@@ -1,0 +1,54 @@
+services:
+  postgres:
+    container_name: assistant_postgres 
+    image: postgres:16.1
+    environment:
+      POSTGRES_USER: ${KOYEB_DB_USER}
+      POSTGRES_PASSWORD: ${KOYEB_DB_PASSWORD}
+      POSTGRES_DB: ${KOYEB_DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KOYEB_DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    container_name: assistant_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD} 
+    ports:
+      - "5050:80" 
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  redis:
+    container_name: assistant_redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  web:
+    container_name: assistant_web
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+
+volumes:
+  pgdata:
+    driver: local
+  pgadmin_data:
+    driver: local

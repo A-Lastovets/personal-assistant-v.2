@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Main notes page{% endblock %}
+
+{% block content %}
+<div class="card contact-form-container" style="text-align: center;">
+    <div class="card-header" style="background-color: #155840; color: #E2B29B; border-radius: 4px;">
+        <h1 class="m-2">Manage notes</h1>
+    </div>
+    <div class="card-body">
+        <div class="list-group">
+            <a href="{% url 'add_note' %}" class="list-group-item list-group-item-action">
+                Add note
+            </a>
+            <a href="{% url 'note_list' %}" class="list-group-item list-group-item-action">
+                List of notes
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .contact-form-container .card {
+        background-color: #155840;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .card-header {
+        background-color: #155840;
+        color: #E2B29B;
+        border-radius: 4px;
+    }
+
+    .list-group-item-action {
+        color: #E2B29B;
+        background-color: #3D6657;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item-action:hover {
+        background-color: #E2B29B;
+        color: #155840;
+        border-color: #E2B29B;
+    }
+
+    .list-group-item-action:focus {
+        box-shadow: none;
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            padding: 15px;
+        }
+
+        .list-group-item {
+            padding: 12px 15px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 10px;
+        }
+    }
+</style>
+
+{% endblock %}

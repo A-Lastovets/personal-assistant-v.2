@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit contact{% endblock %}
+
+{% block content %}
+
+<style>
+    .contact-form-container {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #155840;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-form-container h1 {
+        color: #40886E;
+    }
+
+    .btn-primary {
+        background-color: #E2B29B;
+        border-color: #E2B29B;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #D9A78A;
+        border-color: #D9A78A;
+    }
+
+    .btn {
+        border-radius: 5px;
+    }
+
+    .d-flex {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-block {
+        width: 48%;
+        margin-top: 8px;
+        padding: 6px 12px;
+        text-align: center;
+    }
+
+    .btn-block:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<div class="card contact-form-container mx-auto">   
+    <h1 class="mb-4">Edit contact: {{ contact.name }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary btn-block" style="flex: 1; margin-right: 10px; padding: 6px 12px; margin-top: 8px;">Save changes</button>
+            <a href="{% url 'contact_list' %}" class="btn btn-block" style="flex: 1; background-color: #3D6657; border-color: #40886E; color: #fff; padding: 6px 12px; margin-top: 8px;">Contact list</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

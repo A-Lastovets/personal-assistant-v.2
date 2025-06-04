@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Search contacts{% endblock %}
+
+{% block content %}
+<style>
+    ::placeholder {
+        color: #e2b19b9a !important;
+    }
+
+    .content-wrapper {
+        border: 2px solid #155840;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #155840;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .contact-form-container {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #155840;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #E2B29B;
+        text-align: center;
+    }
+
+    .form-control {
+        background-color: #40886E;
+        border-radius: 5px;
+        border: 1px solid #E2B29B;
+        color: white;
+        font-size: 1rem;
+        padding: 12px 20px;
+        min-height: 45px;
+        width: 80%;
+        margin-right: 10px;
+    }
+
+    .form-control:focus {
+        border-color: #C69C6D;
+        background-color: #3D6657;
+    }
+
+    .btn-primary {
+        background-color: #E2B29B;
+        border-color: #E2B29B;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #C69C6D;
+        border-color: #C69C6D;
+    }
+
+    .btn {
+        border-radius: 5px;
+    }
+
+    .list-group-item {
+        background-color: #40886E;
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        color: #E2B29B;
+    }
+
+    .list-group-item:hover {
+        background-color: #3D6657;
+    }
+
+    .list-group-item strong {
+        color: #E2B29B;
+    }
+</style>
+
+<div class="content-wrapper mx-auto">
+    <h1 class="mb-4">Search contacts</h1>
+
+    <div class="card contact-form-container">
+        <form method="GET" class="mb-4">
+            <input type="text" name="query" placeholder="Search by Name" class="form-control" value="{{ query }}">
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </form>
+
+        <ul class="list-group">
+            {% for contact in contacts %}
+                <li class="list-group-item">
+                    <a href="{% url 'contact_detail' contact.id %}">{{ contact.name }}</a>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No results found</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

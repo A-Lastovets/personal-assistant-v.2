@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}List of uploaded files{% endblock %}
+
+<link rel="stylesheet" href="{% static 'css/files_list.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<style>
+    .btn-close-custom {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #E2B29B;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .btn-close-custom:hover {
+        color: #CA825F;
+    }
+
+    .btn-download {
+        background-color: #6FBDA2;
+        color: white;
+    }
+
+    .btn-download:hover {
+        background-color: #40886E;
+    }
+
+    .btn-delete {
+        background-color: #CA825F;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #986F5B;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+
+    .page-item {
+        margin: 0 0.2rem;
+    }
+
+    .page-link {
+        background-color: #3D6657;
+        color: #E2B29B;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .page-link:hover {
+        background-color: #6FBDA2;
+        color: white;
+    }
+
+    .page-item.active .page-link {
+        background-color: #40886E;
+        color: white;
+        pointer-events: none; 
+    }
+
+    @media (max-width: 768px) {
+    .card {
+        width: 100%;
+        margin: 10px;
+    }
+
+    .btn-download, .btn-delete {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .pagination {
+        font-size: 0.8rem;
+    }
+}
+
+</style>
+
+{% block content %}
+    <div class="container card" style="padding-top: 0;">
+        <h1 class="mb-4 text-center" style="color: #E2B29B; padding-top: 3%;">List of uploaded files</h1>
+
+        <div class="d-flex justify-content-center">
+            <div class="card" style="width: 50vw; background-color: #40886E; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);">
+                <div class="card-body text-center">
+                    <form method="GET" action="{% url 'file_list' %}" id="filterForm">
+                        <div class="form-group">
+                            <label for="category" style="color: #E2B29B;">Select category:</label>
+                            <select name="category" id="category" class="form-control mb-3" style="width: 80%; margin: auto; padding: 0 5px 0 5px;" onchange="document.getElementById('filterForm').submit();">
+                                <option value="">All categories</option>
+                                <option value="image" {% if selected_category == 'image' %}selected{% endif %}>Images</option>
+                                <option value="video" {% if selected_category == 'video' %}selected{% endif %}>Videos</option>
+                                <option value="audio" {% if selected_category == 'audio' %}selected{% endif %}>Audio</option>
+                                <option value="document" {% if selected_category == 'document' %}selected{% endif %}>Documents</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="background-color: #3D6657; border: none; display: none;">Filter</button>
+                    </form>
+                    <a href="{% url 'upload_file' %}" class="btn btn-success mb-3 mt-3" style="color: #E2B29B;background-color: #3D6657; border: none">Upload new file</a>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for file in files %}
+                        <li class="list-group-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                {% if file.category == 'image' %}
+                                    <img src="{{ file.file.url }}" alt="Image" class="img-thumbnail me-3" style="width: 70px; height: 70px;" onclick="openImage('{{ file.file.url }}')">
+                                {% elif file.category == 'video' %}
+                                    <img src="{{ file.preview.url }}" alt="Video preview" class="img-thumbnail me-3" style="width: 70px; height: 70px;" onclick="openVideo('{{ file.file.url }}')">
+                                {% elif file.category == 'audio' %}
+                                    <img src="{% static 'files_app/audio_placeholder.png' %}" alt="Audio placeholder" class="img-thumbnail me-3" style="width: 70px; height: 70px;">
+                                {% elif file.category == 'document' %}
+                                    <img src="{% static 'files_app/doc_placeholder.png' %}" alt="Document placeholder" class="img-thumbnail me-3" style="width: 70px; height: 70px;">
+                                {% else %}
+                                    <img src="{% static 'files_app/doc_placeholder.png' %}" alt="Other placeholder" class="img-thumbnail me-3" style="width: 70px; height: 70px;">
+                                {% endif %}
+                                <div class="me-auto">
+                                    <strong>{{ file.name }}</strong> - {{ file.get_category_display }}
+                                    <div class="text-muted" style="font-size: 0.9em;">Uploaded: {{ file.uploaded_at|date:"d.m.Y H:i" }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <a href="{% url 'download_file' file.id %}" class="btn btn-download btn-sm me-2" style="color: white; background-color: #E2B29B;">Upload</a>
+                                <a href="{% url 'delete_file' file.id %}" onclick="return confirm('Ви впевнені, що хочете видалити цей файл?');" class="btn btn-delete btn-sm">Delete</a>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item" style="background-color: #3D6657; color: #E2B29B;">No files found</li>
+                    {% endfor %}
+                </ul>
+
+                {% if is_paginated %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination">
+                        {% if files.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1&category={{ selected_category }}" aria-label="First">First page</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ files.previous_page_number }}&category={{ selected_category }}" aria-label="Previous">Previous</a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in files.paginator.page_range %}
+                            <li class="page-item {% if files.number == page_num %}active{% endif %}">
+                                {% if files.number == page_num %}
+                                    <span>{{ page_num }}</span>
+                                {% else %}
+                                    <a class="page-link" href="?page={{ page_num }}&category={{ selected_category }}">{{ page_num }}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+
+                        {% if files.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ files.next_page_number }}&category={{ selected_category }}" aria-label="Next">Next page</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ files.paginator.num_pages }}&category={{ selected_category }}" aria-label="Last">Last page</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h5 class="modal-title">View File</h5>
+                    <button type="button" class="btn-close btn-close-custom" aria-label="Close" style="color: #e6e6e6 !important; padding: 0 5px 0 5px; margin: 0;" onclick="closeFile()">x</button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalImage" src="" alt="Modal Image" class="img-fluid" style="display:none;">
+                    <iframe id="modalVideo" src="" frameborder="0" allowfullscreen style="display:none; width:100%; height:400px;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openImage(url) {
+            const modalImage = document.getElementById('modalImage');
+            const modalVideo = document.getElementById('modalVideo');
+            modalImage.style.display = 'block';
+            modalVideo.style.display = 'none'; 
+            modalImage.src = url;
+            $('#imageModal').modal('show');
+        }
+
+        function openVideo(url) {
+            const modalImage = document.getElementById('modalImage');
+            const modalVideo = document.getElementById('modalVideo');
+            modalImage.style.display = 'none';
+            modalVideo.style.display = 'block';  
+            modalVideo.src = url;
+            $('#imageModal').modal('show');
+        }
+
+        function closeFile() {
+            const modalImage = document.getElementById('modalImage');
+            const modalVideo = document.getElementById('modalVideo');
+            modalImage.style.display = 'none';
+            modalVideo.style.display = 'none';
+            modalImage.src = '';
+            modalVideo.src = '';
+            $('#imageModal').modal('hide');
+        }
+    </script>
+{% endblock %}

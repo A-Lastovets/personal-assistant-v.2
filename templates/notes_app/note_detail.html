@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Note details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center card" style="color: #E2B29B;">{{ note.title }}</h1>
+    
+    <div class="card mb-4 p-3" style="background-color: #40886E; border-radius: 10px; color: #E2B29B;">
+        <p>{{ note.content }}</p>
+    </div>
+    
+    <h5 class="text-center" style="color: #CA825F;">Creation date:</h5>
+    <p class="text-center" style="color: #E2B29B;">{{ note.created_at|date:"d.m.Y H:i" }}</p>
+    
+    <h5 class="text-center" style="color: #CA825F;">Tags:</h5>
+    <div class="mb-4 d-flex flex-wrap justify-content-center" style="background-color: #3D6657; border-radius: 10px; padding: 10px;">
+        {% for tag in note.tags.all %}
+            <span class="badge" style="background-color: #6FBDA2; color: #155840; margin: 5px;">{{ tag.name }}</span>
+        {% empty %}
+            <span class="badge" style="background-color: #6FBDA2; color: #155840; margin: 5px;">No tags available</span>
+        {% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'edit_note' note.id %}" class="btn btn-warning" style="background-color: #E2B29B; color: white;">Edit</a>
+        <a href="{% url 'delete_note' note.id %}" class="btn btn-danger" style="color: white;" onclick="return confirm('Ви впевнені, що хочете видалити цю нотатку?');">Видалити</a>
+        <a href="{% url 'note_list' %}" class="btn btn-secondary" style="background-color: #155840; color: white;">Back to notes list</a>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 15px;
+        }
+
+        .d-flex {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .d-flex a {
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            margin: 5px;
+        }
+    }
+</style>
+
+{% endblock %}

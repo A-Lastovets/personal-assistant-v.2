@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact details{% endblock %}
+{% load static %}
+{% block content %}
+<div class="card contact-form-container mx-auto">
+    <h1 class="mb-4">{{ contact.name }}</h1>
+    <p><strong>Address:</strong> {{ contact.address }}</p>
+    <p><strong>Phone:</strong> {{ contact.phone_number }}</p>
+    <p><strong>Email:</strong> {{ contact.email }}</p>
+    <p><strong>Birthday:</strong> {{ contact.birthday }}</p>
+    <p><strong>Days until the birthday:</strong> {{ contact.days_until_birthday }}</p>
+
+    <a href="{% url 'edit_contact' contact.id %}" class="btn btn-primary" style="margin-bottom: 2ex;">Edit contact</a>
+    <a href="{% url 'delete_contact' contact.id %}" class="btn btn-danger" style="margin-bottom: 2ex;" onclick="return confirmDelete()">Delete contact</a>
+    <a href="{% url 'contact_list' %}" class="btn btn-secondary">Contact list</a>
+
+    <style>
+        .contact-form-container .card {
+            background-color: #155840;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: #E2B29B;
+            border-color: #E2B29B;
+        }
+
+        .btn-primary:hover {
+            background-color: #C69C6D;
+            border-color: #C69C6D;
+        }
+
+        .btn-danger {
+            background-color: #D9534F;
+            border-color: #D9534F;
+        }
+
+        .btn-danger:hover {
+            background-color: #C73F39;
+            border-color: #C73F39;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+</div>
+
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this contact?");
+    }
+</script>
+{% endblock %}
