@@ -11,6 +11,7 @@ urlpatterns = [
     path('login/', views.loginuser, name='login'),
     path('logout/', login_required(views.logoutuser), name='logout'),
     path('profile/', login_required(views.profile), name='profile'),
+    path("avatar-upload/", views.upload_avatar, name="avatar-upload"),
     path('reset-password/', views.ResetPasswordView.as_view(), name='password_reset'),
     path('reset-password/done/', PasswordResetDoneView.as_view(template_name='users/password_reset_done.html'),
          name='password_reset_done'),

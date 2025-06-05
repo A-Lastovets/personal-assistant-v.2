@@ -22,7 +22,6 @@ from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.core.files.storage import default_storage
-print(default_storage.__class__)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -202,14 +201,8 @@ AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = 'eu-north-1'
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 AWS_QUERYSTRING_AUTH = True
-# AWS_S3_FILE_OVERWRITE = False
-# AWS_DEFAULT_ACL = None
 
-# AWS_S3_OBJECT_PARAMETERS = {
-#     "CacheControl": "max-age=86400",
-#     "ACL": "public-read",
-# }
 
-MEDIAFILES_LOCATION = "media"
+MEDIAFILES_LOCATION = ""
 DEFAULT_FILE_STORAGE = 'personal_assistant.storages_backends.MediaStorage'
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"

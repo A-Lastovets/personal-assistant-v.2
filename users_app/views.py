@@ -1,17 +1,20 @@
 from .forms import RegisterForm, LoginForm, ProfileForm, UserUpdateForm
 
-
+import boto3
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-
-from personal_assistant.views import HomePageView
 from django.core.files.storage import default_storage
-print(default_storage.__class__)
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
 
 def signupuser(request):
     if request.user.is_authenticated:
@@ -62,39 +65,37 @@ def profile(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
+            profile = profile_form.instance
+            current_avatar = profile.avatar
 
-            # Поточний аватар (до змін)
-            current_avatar = profile_form.instance.avatar
-
-            # ⛔ не видаляти дефолтний
             def is_custom_avatar(avatar):
                 return avatar and "default_avatar.png" not in avatar.name
 
-            # Якщо натиснуто "Clear"
-            if request.POST.get("avatar-clear"):
+            # Якщо завантажено новий файл — видаляємо попередній
+            if 'avatar' in request.FILES:
                 if is_custom_avatar(current_avatar):
-                    current_avatar.delete(save=False)
-                profile_form.instance.avatar = None
-                profile_form.instance.save()
+                    default_storage.delete(current_avatar.name)
+                profile.avatar = request.FILES['avatar']
+                profile.save()
             else:
-                # Якщо завантажено новий аватар
-                if 'avatar' in request.FILES:
-                    new_avatar = request.FILES['avatar']
-                    if is_custom_avatar(current_avatar):
-                        current_avatar.delete(save=False)
-                    profile = profile_form.save(commit=False)
-                    profile.avatar = new_avatar
-                    profile.save()
+                profile_form.save()
 
+            request.user.profile.refresh_from_db()
             messages.success(request, "Profile updated successfully.")
             return redirect(to='users:profile')
+        else:
+            messages.error(request, "Something went wrong. Please try again.")
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
 
+    avatar_path = request.user.profile.avatar.name if request.user.profile.avatar else None
+    avatar_url = get_presigned_url(avatar_path) if avatar_path else None
+
     return render(request, 'users/profile.html', {
         'user_form': user_form,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'avatar_url': avatar_url
     })
 
 
@@ -104,3 +105,38 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     html_email_template_name = 'users/password_reset_email.html'
     success_url = reverse_lazy('users:password_reset_done')
     subject_template_name = 'users/password_reset_subject.txt'
+
+
+def get_presigned_url(path: str, expires_in: int = 3600) -> str:
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_S3_REGION_NAME,
+    )
+
+    return s3.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": settings.AWS_STORAGE_BUCKET_NAME, "Key": path},
+        ExpiresIn=expires_in,
+    )
+
+
+@require_POST
+@login_required
+@csrf_exempt
+def upload_avatar(request):
+    avatar = request.FILES.get('avatar')
+    if not avatar:
+        return JsonResponse({'error': 'No file uploaded.'}, status=400)
+
+    profile = request.user.profile
+
+    if profile.avatar and "default_avatar.png" not in profile.avatar.name:
+        profile.avatar.delete(save=False)
+
+    profile.avatar = avatar
+    profile.save()
+
+    avatar_url = get_presigned_url(profile.avatar.name)
+    return JsonResponse({'avatar_url': avatar_url})
