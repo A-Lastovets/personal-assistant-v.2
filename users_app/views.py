@@ -1,6 +1,7 @@
 from .forms import RegisterForm, LoginForm, ProfileForm, UserUpdateForm
 
 import boto3
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -10,7 +11,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.core.files.storage import default_storage
-
+from users_app.s3_utils import s3_file_exists
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -71,7 +72,7 @@ def profile(request):
             def is_custom_avatar(avatar):
                 return avatar and "default_avatar.png" not in avatar.name
 
-            # Якщо завантажено новий файл — видаляємо попередній
+            # If a new file is uploaded, delete the previous one.
             if 'avatar' in request.FILES:
                 if is_custom_avatar(current_avatar):
                     default_storage.delete(current_avatar.name)
@@ -90,7 +91,12 @@ def profile(request):
         profile_form = ProfileForm(instance=request.user.profile)
 
     avatar_path = request.user.profile.avatar.name if request.user.profile.avatar else None
-    avatar_url = get_presigned_url(avatar_path) if avatar_path else None
+    avatar_url = None
+
+    if avatar_path and s3_file_exists(avatar_path):
+        avatar_url = get_presigned_url(avatar_path)
+    else:
+        avatar_url = "https://sudoteam.s3.eu-north-1.amazonaws.com/default_avatar.png"
 
     return render(request, 'users/profile.html', {
         'user_form': user_form,
